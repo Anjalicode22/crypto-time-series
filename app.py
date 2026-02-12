@@ -297,7 +297,7 @@ model_p.fit(train_prophet)
 future = model_p.make_future_dataframe(periods=len(test), freq='D')
 forecast = model_p.predict(future)
 prophet_pred = forecast['yhat'][-len(test):].values
-    fig1, ax1 = plt.subplots(figsize=(6, 4))
+fig1, ax1 = plt.subplots(figsize=(6, 4))
     ax1.plot(train['ds'], train['y'], label='Train')
     ax1.plot(test['ds'], test['y'], label='Test', color='orange')
     ax1.plot(test['ds'], prophet_pred, label='Prophet', color='green', linestyle='--')
@@ -440,6 +440,7 @@ elif page == "Power BI Dashboard":
         height=650
 
     )
+
 
 
 
