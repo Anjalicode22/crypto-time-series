@@ -299,34 +299,33 @@ forecast = model_p.predict(future)
 prophet_pred = forecast['yhat'][-len(test):].values
 fig1, ax1 = plt.subplots(figsize=(6, 4))
 ax1.plot(train['ds'], train['y'], label='Train')
-    ax1.plot(test['ds'], test['y'], label='Test', color='orange')
-    ax1.plot(test['ds'], prophet_pred, label='Prophet', color='green', linestyle='--')
-    ax1.legend(); ax1.set_title("Prophet Forecast")
-    prophet_metrics = evaluate_model(test['y'], prophet_pred, "Prophet")
+ax1.plot(test['ds'], test['y'], label='Test', color='orange')
+ax1.plot(test['ds'], prophet_pred, label='Prophet', color='green', linestyle='--')
+ax1.legend(); ax1.set_title("Prophet Forecast")
+prophet_metrics = evaluate_model(test['y'], prophet_pred, "Prophet")
 
-    # ARIMA
-    data['timestamp'] = pd.to_datetime(data['timestamp'])
-    data.set_index('timestamp', inplace=True)
-    train_size = int(len(data) * 0.8)
-    train, test = data['close'][:train_size], data['close'][train_size:]
-    arima_fit = ARIMA(train, order=(5,1,0)).fit()
-    arima_pred = arima_fit.forecast(steps=len(test))
-    fig2, ax2 = plt.subplots(figsize=(6, 4))
-    ax2.plot(train.index, train, label='Train')
-    ax2.plot(test.index, test, label='Test', color='orange')
-    ax2.plot(test.index, arima_pred, label='ARIMA', color='green', linestyle='--')
-    ax2.legend(); ax2.set_title("ARIMA Forecast")
-    arima_metrics = evaluate_model(test, arima_pred, "ARIMA")
-
-    # SARIMA
-    sarima_model = SARIMAX(train, order=(2,1,2), seasonal_order=(1,1,1,12)).fit(disp=False)
-    sarima_pred = sarima_model.predict(start=len(train), end=len(data)-1, dynamic=False)
-    fig3, ax3 = plt.subplots(figsize=(6, 4))
-    ax3.plot(train.index, train, label='Train')
-    ax3.plot(test.index, test, label='Test', color='orange')
-    ax3.plot(test.index, sarima_pred, label='SARIMA', color='green', linestyle='--')
-    ax3.legend(); ax3.set_title("SARIMA Forecast")
-    sarima_metrics = evaluate_model(test, sarima_pred, "SARIMA")
+# ARIMA
+data['timestamp'] = pd.to_datetime(data['timestamp'])
+data.set_index('timestamp', inplace=True)
+train_size = int(len(data) * 0.8)
+train, test = data['close'][:train_size], data['close'][train_size:]
+arima_fit = ARIMA(train, order=(5,1,0)).fit()
+arima_pred = arima_fit.forecast(steps=len(test))
+fig2, ax2 = plt.subplots(figsize=(6, 4))
+ax2.plot(train.index, train, label='Train')    
+ax2.plot(test.index, test, label='Test', color='orange')
+ax2.plot(test.index, arima_pred, label='ARIMA', color='green', linestyle='--')
+ax2.legend(); ax2.set_title("ARIMA Forecast")
+arima_metrics = evaluate_model(test, arima_pred, "ARIMA")
+# SARIMA
+sarima_model = SARIMAX(train, order=(2,1,2), seasonal_order=(1,1,1,12)).fit(disp=False)
+sarima_pred = sarima_model.predict(start=len(train), end=len(data)-1, dynamic=False)
+fig3, ax3 = plt.subplots(figsize=(6, 4))
+ax3.plot(train.index, train, label='Train')
+ax3.plot(test.index, test, label='Test', color='orange')
+ax3.plot(test.index, sarima_pred, label='SARIMA', color='green', linestyle='--')
+ax3.legend(); ax3.set_title("SARIMA Forecast")
+sarima_metrics = evaluate_model(test, sarima_pred, "SARIMA")
 
     # LSTM
     prices = data['close'].values.reshape(-1, 1)
@@ -440,6 +439,7 @@ elif page == "Power BI Dashboard":
         height=650
 
     )
+
 
 
 
