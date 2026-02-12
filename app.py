@@ -3,6 +3,8 @@ import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 from prophet import Prophet
+import cmdstanpy
+cmdstanpy.install_cmdstan()
 import matplotlib.pyplot as plt
 import math
 import seaborn as sns
@@ -268,7 +270,7 @@ elif page == "Forecasting Models":
     df_prophet = data[['timestamp', 'close']].rename(columns={'timestamp': 'ds', 'close': 'y'})
     train_size = int(len(df_prophet) * 0.8)
     train, test = df_prophet[:train_size], df_prophet[train_size:]
-    model_p = Prophet()
+    model_p = Prophet(stan_backend="CMDSTANPY")
     model_p.fit(train)
     future = model_p.make_future_dataframe(periods=len(test), freq='D')
     forecast = model_p.predict(future)
@@ -414,4 +416,5 @@ elif page == "Power BI Dashboard":
         powerbi_url,
         width=1200,
         height=650
+
     )
