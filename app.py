@@ -339,7 +339,6 @@ def create_dataset(ds, step=60):
             X.append(ds[i-step:i, 0])
             y.append(ds[i, 0])
         return np.array(X), np.array(y)
-
  X_train, y_train = create_dataset(train_data)
  X_test, y_test = create_dataset(test_data)
  X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
@@ -438,6 +437,7 @@ elif page == "Power BI Dashboard":
         height=650
 
     )
+
 
 
 
