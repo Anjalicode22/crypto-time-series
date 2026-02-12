@@ -293,7 +293,7 @@ model_p = Prophet()
 st.write("Prophet Data Preview")
 st.write(train_prophet.head())
 st.write(train_prophet.dtypes)
-    model_p.fit(train_prophet)
+model_p.fit(train_prophet)
     future = model_p.make_future_dataframe(periods=len(test), freq='D')
     forecast = model_p.predict(future)
     prophet_pred = forecast['yhat'][-len(test):].values
@@ -440,6 +440,7 @@ elif page == "Power BI Dashboard":
         height=650
 
     )
+
 
 
 
