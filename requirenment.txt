@@ -4,6 +4,6 @@ numpy
 plotly
 statsmodels
 scikit-learn
-prophet
-tensorflow-cpu==2.15.0
-
+tensorflow-cpu
+pystan==3.6.2
+prophet==1.1
