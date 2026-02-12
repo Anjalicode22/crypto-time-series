@@ -327,40 +327,39 @@ ax3.plot(test.index, sarima_pred, label='SARIMA', color='green', linestyle='--')
 ax3.legend(); ax3.set_title("SARIMA Forecast")
 sarima_metrics = evaluate_model(test, sarima_pred, "SARIMA")
 
-    # LSTM
-    prices = data['close'].values.reshape(-1, 1)
-    scaler = MinMaxScaler()
-    scaled = scaler.fit_transform(prices)
-    split = int(len(scaled)*0.8)
-    train_data, test_data = scaled[:split], scaled[split:]
-
-    def create_dataset(ds, step=60):
+# LSTM
+prices = data['close'].values.reshape(-1, 1)
+scaler = MinMaxScaler()
+scaled = scaler.fit_transform(prices)
+split = int(len(scaled)*0.8)
+train_data, test_data = scaled[:split], scaled[split:]
+def create_dataset(ds, step=60):
         X, y = [], []
         for i in range(step, len(ds)):
             X.append(ds[i-step:i, 0])
             y.append(ds[i, 0])
         return np.array(X), np.array(y)
 
-    X_train, y_train = create_dataset(train_data)
-    X_test, y_test = create_dataset(test_data)
-    X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
-    X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
+ X_train, y_train = create_dataset(train_data)
+ X_test, y_test = create_dataset(test_data)
+ X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
+ X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
 
     model = Sequential([
         LSTM(50, return_sequences=True, input_shape=(X_train.shape[1], 1)),
         LSTM(50),
         Dense(1)
     ])
-    model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(X_train, y_train, epochs=10, batch_size=32, verbose=0)
-    lstm_pred = model.predict(X_test)
-    lstm_pred = scaler.inverse_transform(lstm_pred)
-    actual_prices = scaler.inverse_transform(y_test.reshape(-1, 1))
-    fig4, ax4 = plt.subplots(figsize=(6, 4))
-    ax4.plot(actual_prices, label='Actual', color='blue')
-    ax4.plot(lstm_pred, label='Predicted', color='red', linestyle='--')
-    ax4.legend(); ax4.set_title("LSTM Prediction")
-    lstm_metrics = evaluate_model(actual_prices, lstm_pred, "LSTM")
+model.compile(optimizer='adam', loss='mean_squared_error')
+model.fit(X_train, y_train, epochs=10, batch_size=32, verbose=0)
+lstm_pred = model.predict(X_test)
+lstm_pred = scaler.inverse_transform(lstm_pred)
+actual_prices = scaler.inverse_transform(y_test.reshape(-1, 1))
+fig4, ax4 = plt.subplots(figsize=(6, 4))
+ax4.plot(actual_prices, label='Actual', color='blue')
+ax4.plot(lstm_pred, label='Predicted', color='red', linestyle='--')
+ax4.legend(); ax4.set_title("LSTM Prediction")
+lstm_metrics = evaluate_model(actual_prices, lstm_pred, "LSTM")
 
     
 
@@ -439,6 +438,7 @@ elif page == "Power BI Dashboard":
         height=650
 
     )
+
 
 
 
