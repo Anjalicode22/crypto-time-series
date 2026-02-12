@@ -139,7 +139,8 @@ if page == "Home":
     with col2:
         img_path = "binance2.webp"
         if os.path.exists(img_path):
-            st.image(img_path, width="stretch")
+            st.image(img_path, use_column_width=True)
+
         else:
             st.warning(f"Image not found: {img_path}")
 
@@ -416,4 +417,5 @@ elif page == "Power BI Dashboard":
         height=650
 
     )
+
 
