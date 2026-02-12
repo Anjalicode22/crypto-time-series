@@ -1,3 +1,4 @@
+# (imports unchanged)
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -44,35 +45,11 @@ def evaluate_model(actual, predicted, model_name):
 if "active_page" not in st.session_state:
     st.session_state.active_page = "Home"
 
-with st.sidebar:
-    menu_items = ["Home", "Data View", "EDA","Forecasting Models","Model Evaluation","Power BI Dashboard"]
-    for item in menu_items:
-        is_active = st.session_state.active_page == item
-        st.markdown(
-            f"""
-            <div style="border-radius: 8px;
-                        margin-bottom: 8px;
-                        background-color: {'#2b2f33' if is_active else 'transparent'};
-                        border-left: {'5px solid #ffcc00' if is_active else '5px solid transparent'};">
-            """,
-            unsafe_allow_html=True,
-        )
-        if st.button(item, key=f"menu_{item}", use_container_width=True):
-            st.session_state.active_page = item
-        st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("""<style>body, .main {background-color: #0f172a;color: #d1fae5;}
-h1, h2, h3 {color: #22c55e !important;}
-[data-testid="stSidebar"] {background-color: #022c22 !important;}
-.stButton>button {background-color: #022c22 !important;color: white !important;border-radius: 8px;border: 1px solid #22c55e !important;}
-.stButton>button:hover {background-color: #22c55e !important;color: black !important;}
-</style>""", unsafe_allow_html=True)
-
 page = st.session_state.active_page
 
-# ---------------- FORECASTING MODELS ----------------
-
+# ================= FORECASTING MODELS =================
 if page == "Forecasting Models":
+
     st.subheader("Forecasting Models")
 
     # Prophet
@@ -95,8 +72,8 @@ if page == "Forecasting Models":
 
     fig1, ax1 = plt.subplots(figsize=(6, 4))
     ax1.plot(train['ds'], train['y'], label='Train')
-    ax1.plot(test['ds'], test['y'], label='Test', color='orange')
-    ax1.plot(test['ds'], prophet_pred, label='Prophet', color='green', linestyle='--')
+    ax1.plot(test['ds'], test['y'], label='Test')
+    ax1.plot(test['ds'], prophet_pred, label='Prophet')
     ax1.legend()
     ax1.set_title("Prophet Forecast")
 
@@ -105,29 +82,37 @@ if page == "Forecasting Models":
     # ARIMA
     data['timestamp'] = pd.to_datetime(data['timestamp'])
     data.set_index('timestamp', inplace=True)
+
     train_size = int(len(data) * 0.8)
-    train_arima, test_arima = data['close'][:train_size], data['close'][train_size:]
+    train_arima = data['close'][:train_size]
+    test_arima = data['close'][train_size:]
 
     arima_fit = ARIMA(train_arima, order=(5,1,0)).fit()
     arima_pred = arima_fit.forecast(steps=len(test_arima))
 
     fig2, ax2 = plt.subplots(figsize=(6, 4))
     ax2.plot(train_arima.index, train_arima, label='Train')
-    ax2.plot(test_arima.index, test_arima, label='Test', color='orange')
-    ax2.plot(test_arima.index, arima_pred, label='ARIMA', color='green', linestyle='--')
+    ax2.plot(test_arima.index, test_arima, label='Test')
+    ax2.plot(test_arima.index, arima_pred, label='ARIMA')
     ax2.legend()
     ax2.set_title("ARIMA Forecast")
 
     arima_metrics = evaluate_model(test_arima, arima_pred, "ARIMA")
 
     # SARIMA
-    sarima_model = SARIMAX(train_arima, order=(2,1,2), seasonal_order=(1,1,1,12)).fit(disp=False)
-    sarima_pred = sarima_model.predict(start=len(train_arima), end=len(data)-1, dynamic=False)
+    sarima_model = SARIMAX(train_arima, order=(2,1,2),
+                           seasonal_order=(1,1,1,12)).fit(disp=False)
+
+    sarima_pred = sarima_model.predict(
+        start=len(train_arima),
+        end=len(data)-1,
+        dynamic=False
+    )
 
     fig3, ax3 = plt.subplots(figsize=(6, 4))
     ax3.plot(train_arima.index, train_arima, label='Train')
-    ax3.plot(test_arima.index, test_arima, label='Test', color='orange')
-    ax3.plot(test_arima.index, sarima_pred, label='SARIMA', color='green', linestyle='--')
+    ax3.plot(test_arima.index, test_arima, label='Test')
+    ax3.plot(test_arima.index, sarima_pred, label='SARIMA')
     ax3.legend()
     ax3.set_title("SARIMA Forecast")
 
@@ -138,8 +123,9 @@ if page == "Forecasting Models":
     scaler = MinMaxScaler()
     scaled = scaler.fit_transform(prices)
 
-    split = int(len(scaled)*0.8)
-    train_data, test_data = scaled[:split], scaled[split:]
+    split = int(len(scaled) * 0.8)
+    train_data = scaled[:split]
+    test_data = scaled[split:]
 
     def create_dataset(ds, step=60):
         X, y = [], []
@@ -168,8 +154,8 @@ if page == "Forecasting Models":
     actual_prices = scaler.inverse_transform(y_test.reshape(-1, 1))
 
     fig4, ax4 = plt.subplots(figsize=(6, 4))
-    ax4.plot(actual_prices, label='Actual', color='blue')
-    ax4.plot(lstm_pred, label='Predicted', color='red', linestyle='--')
+    ax4.plot(actual_prices, label='Actual')
+    ax4.plot(lstm_pred, label='Predicted')
     ax4.legend()
     ax4.set_title("LSTM Prediction")
 
@@ -177,19 +163,49 @@ if page == "Forecasting Models":
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("#### Prophet Model")
         st.pyplot(fig1)
     with col2:
-        st.markdown("#### ARIMA Model")
         st.pyplot(fig2)
 
     col3, col4 = st.columns(2)
     with col3:
-        st.markdown("#### SARIMA Model")
         st.pyplot(fig3)
     with col4:
-        st.markdown("#### LSTM Model")
         st.pyplot(fig4)
 
-    st.session_state["model_metrics"] = [prophet_metrics, arima_metrics, sarima_metrics, lstm_metrics]
+    st.session_state["model_metrics"] = [
+        prophet_metrics,
+        arima_metrics,
+        sarima_metrics,
+        lstm_metrics
+    ]
 
+# ================= MODEL EVALUATION =================
+elif page == "Model Evaluation":
+
+    st.subheader("📊 Model Evaluation Metrics")
+
+    if "model_metrics" in st.session_state:
+        metrics_df = pd.DataFrame(st.session_state["model_metrics"])
+        metrics_df = metrics_df.sort_values(by="RMSE")
+        st.dataframe(metrics_df)
+
+        best_model = metrics_df.iloc[0]["Model"]
+        st.success(f"🏆 Best Performing Model (Based on RMSE): {best_model}")
+
+        fig, ax = plt.subplots(figsize=(8,5))
+        ax.bar(metrics_df["Model"], metrics_df["RMSE"])
+        ax.set_ylabel("RMSE")
+        ax.set_title("Model RMSE Comparison")
+        st.pyplot(fig)
+    else:
+        st.info("Please run models in 'Forecasting Models' first.")
+
+# ================= POWER BI =================
+elif page == "Power BI Dashboard":
+
+    st.markdown("## 📊 Interactive Power BI Dashboard")
+
+    powerbi_url = "https://app.powerbi.com/view?r=eyJrIjoiYjA3YWQyN2MtMDM4ZC00YWUxLTlkNGQtNWIxYTc2MTZiZTI1IiwidCI6IjM0YTYzMzMwLWU2MWUtNGMwZC04ODIyLTQ4MjViZTk0YTNkYiJ9"
+
+    components.iframe(powerbi_url, width=1200, height=650)
