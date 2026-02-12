@@ -270,7 +270,30 @@ elif page == "Forecasting Models":
     train_size = int(len(df_prophet) * 0.8)
     train, test = df_prophet[:train_size], df_prophet[train_size:]
     model_p = Prophet
-    model_p.fit(train)
+    # Prepare data for Prophet
+train_prophet = train.copy()
+
+# Rename columns (change according to your dataset)
+train_prophet = train_prophet.rename(columns={
+    "Date": "ds",
+    "Close": "y"
+})
+
+# Convert types
+train_prophet["ds"] = pd.to_datetime(train_prophet["ds"])
+train_prophet["y"] = pd.to_numeric(train_prophet["y"], errors="coerce")
+
+# Remove missing values
+train_prophet = train_prophet.dropna()
+
+# Keep only required columns
+train_prophet = train_prophet[["ds", "y"]]
+model_p = Prophet()
+# 🔍 DEBUG — add here
+st.write("Prophet Data Preview")
+st.write(train_prophet.head())
+st.write(train_prophet.dtypes)
+model_p.fit(train_prophet)
     future = model_p.make_future_dataframe(periods=len(test), freq='D')
     forecast = model_p.predict(future)
     prophet_pred = forecast['yhat'][-len(test):].values
@@ -417,5 +440,6 @@ elif page == "Power BI Dashboard":
         height=650
 
     )
+
 
 
