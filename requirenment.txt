@@ -5,5 +5,8 @@ plotly
 statsmodels
 scikit-learn
 tensorflow-cpu
-pystan==3.6.2
+matplotlib
+seaborn
+mplfinance
+cmdstanpy
 prophet==1.1
