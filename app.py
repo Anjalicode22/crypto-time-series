@@ -72,7 +72,7 @@ page = st.session_state.active_page
 
 # ---------------- FORECASTING MODELS ----------------
 
-elif page == "Forecasting Models":
+if page == "Forecasting Models":
     st.subheader("Forecasting Models")
 
     # Prophet
@@ -192,3 +192,4 @@ elif page == "Forecasting Models":
         st.pyplot(fig4)
 
     st.session_state["model_metrics"] = [prophet_metrics, arima_metrics, sarima_metrics, lstm_metrics]
+
