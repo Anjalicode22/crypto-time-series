@@ -5,9 +5,5 @@ plotly
 statsmodels
 scikit-learn
 tensorflow-cpu
-matplotlib
-seaborn
-mplfinance
-cmdstanpy
-prophet==1.1
+prophet==1.1.5
 
